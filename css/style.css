@@ -4,22 +4,13 @@
 }
 
 body {
-    background: no-repeat center center fixed;
-    background-color: #2f3135;
-    background-image: url("../imgs/0.jpg");
+    background: 
+    /* bottom, image */
+    url("../imgs/0.jpg")
+    no-repeat center center fixed;
+
     -webkit-background-size: cover; /* For WebKit*/
     -moz-background-size: cover;    /* Mozilla*/
     -o-background-size: cover;      /* Opera*/
     background-size: cover;         /* Generic*/
-}
-
-.red0 {
-    position:relative;
-    top:0px;
-
-    width: 100%;
-    height: 100%;
-
-    background:#FF2400;
-    opacity:0.7;    
 }

@@ -16,6 +16,7 @@ App.Color = DS.Model.extend({
 });
 
 /* Taken from walla. */
+
 /* Lazy call */
 // bind a function to a scope, returns a function, use with event listeners
 function bind(func,scope) {
@@ -79,19 +80,21 @@ oref = {
 
 App.ApplicationRoute = Ember.Route.extend({
   model: function() {
+        var original_background = $("body").css("background-image");
         oref.init(function (data)
             {
                 /* TODO: Replace with my own parser. Walla sucks */
                 var orAlerts = [];
                 var rssentries=data.data.rss.channel[0].item || [];
 
-                if (rssentries.length>0){
+                if (rssentries.length > 0)
+                {
                     var mainLabel = data.data.rss.channel[0].title[0];
                     try {
                         var descLabel = data.metadata[2];
                     }
                     catch(e) {
-                        var descLabel="";
+                        var descLabel= "";
                     }
 
                     // map the data needed to a new array
@@ -118,11 +121,15 @@ App.ApplicationRoute = Ember.Route.extend({
                     }
                 }
 
-                /* Callback */
                 this.store.push('color', {
                   section: 'דן',
                   code: 153
                 });
+
+                var opacity = (1 + this.store.all("color").length) / 10; 
+                if (opacity > 1.0)
+                    opacity = 1.0; /* MAX */
+                $("body").css("background-image", "linear-gradient(rgba(255, 0, 0, " + opacity + "),  rgba(255, 0, 0, " + opacity + "))," + original_background);
             });
     }
 });
