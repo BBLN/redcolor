@@ -5,7 +5,10 @@ App.Router.map(function() {
 });
 
 App.IndexRoute = Ember.Route.extend({
-  model: function() {
-    return ['red', 'yellow', 'blue'];
+   model: function() {
+    var url = 'http://www.oref.org.il/WarningMessages/alerts.json';
+    return Ember.$.getJSON(url).then(function(data) {
+      return data["data"]
+    });
   }
 });
