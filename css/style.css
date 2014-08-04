@@ -5,7 +5,7 @@
 
 body {
     background: no-repeat center center fixed;
-    background-color: red;
+    background-color: #2f3135;
     background-image: url("../imgs/0.jpg");
     -webkit-background-size: cover; /* For WebKit*/
     -moz-background-size: cover;    /* Mozilla*/
