@@ -38,13 +38,18 @@
 
   <script type="text/x-handlebars" id="index">
     <div class="row-fluid">
-      <div class="col-md-8 map-container">dadad{{ view App.LiveMapView }}</div>
+      <div class="col-md-8 map-container">
+        {{ view App.LiveMapView }}
+      </div>
       <div class="col-md-4">
-        <ul class="well text-right">
-        {{#each alert in model}}
-          <li>{{alert.area_name}}</li>
-        {{/each}}
-        </ul>
+        <div class="well">
+          <h4 class="text-center"><u>Red Alerts</u></h2>
+          <ul class="text-right">
+            {{#each alert in model}}
+              <li>{{alert.area_name}}</li>
+            {{/each}}
+          </ul>
+        </div>
         <h1 class="text-center" style="font-size: 9em; opacity: 0.6; position: relative;">צבע אדום</h1>
       </div>
     </div>

@@ -4,62 +4,47 @@ App.Router.map(function() {
   // put your routes here
 });
 
-App.Alert = Ember.Object.extend();
-
 App.Alert = DS.Model.extend({
-  area_id: DS.attr('number'),
+  alert_id: DS.attr('number'),
   area_name: DS.attr('string'),
   time:  DS.attr('date'),
   area_lat: DS.attr('number'),
   area_long: DS.attr('number'),
-});
 
-App.Alert.reopenClass({
-  all: function() {
-        return $.getJSON('http://tzeva-adom.com/alerts.php?fmt=jsonp&source=pikud,test&limit=5&callback=?').then(function(response) {
-            console.log(App.Alert.create(response))
-            return null;
-        });
-    },
-
-    expireTime: 6,
-
-    create: function ()
-    {
-        var items = this._super(arguments);
-        // Expiring.
-        setTimeout(function expiredAlert() {
-            console.log(items);
-            items[0].forEach(function removeAlert(alert)
-                {
-                    console.log("Alert expired: " + alert);
-                    alert.delete();
-                });
-        }, App.Alert.expireTime * 1000);
-
-        return items;
-    },
+  expireTime: 600,
+  visited: false,
 });
 
 App.IndexRoute = Ember.Route.extend({
+    addAlerts: function (response) {
+        var store = this.store;
+
+        response.forEach(function (item) {
+            var alert = store.createRecord('alert', item);
+
+            setTimeout(function expiredAlert() {
+                alert.destroyRecord();
+            }, alert.get("expireTime") * 1000);
+        })
+    },
+
    model: function() {
-        console.log("Model");
-        data = App.Alert.all();
+        /* Initialize data */
+        $.getJSON('http://tzeva-adom.com/alerts.php?fmt=jsonp&source=pikud&limit=5&callback=?').then(this.addAlerts.bind(this));
 
         var alerts = new Alerts("http://tzeva-adom.com:8080/redalert");
-        alerts.callback(function(response) { 
-            response.forEach(function (item) {
-                items.push( App.Alert.create(item) );
-            });
-        });
+        alerts.callback(this.addAlerts.bind(this));
         alerts.poll();
 
+        console.log();
+
         var original_background = $("body").css("background-image");
-        var opacity = (1 + data.length) / 10; 
+        var opacity = (1 + this.store.all("alert").length) / 10; 
         if (opacity > 1.0)
             opacity = 1.0; /* MAX */
         $("body").css("background-image", "linear-gradient(rgba(255, 0, 0, " + opacity + "),  rgba(255, 0, 0, " + opacity + "))," + original_background);
-        return data;
+
+        return this.store.all("alert");
     },
 });
 
@@ -78,7 +63,6 @@ App.LiveMapView = Ember.View.extend({
         });
 
         this.set("map", map); /* Useful for inserting circles */
-        this.contentDidChange();
     },
 
     contentDidChange: function() {
@@ -86,6 +70,12 @@ App.LiveMapView = Ember.View.extend({
 
         this.get('controller.content').forEach(function alertCircle(alert)
         {
+            /* TODO: Find better solution. */
+            if (alert.get("visited"))
+                return;
+
+            alert.set("visited", true);
+
             /* Thanks to redalert.co.il */
             var circle = new google.maps.Circle({
                 strokeColor: "red",
@@ -93,7 +83,7 @@ App.LiveMapView = Ember.View.extend({
                 fillColor: "red",
                 fillOpacity: 0,
                 map: map,
-                center: new google.maps.LatLng( alert.area_lat, alert.area_long ),
+                center: new google.maps.LatLng( alert.get("area_lat"), alert.get("area_long") ),
                 radius: 0
             });
 
@@ -128,7 +118,7 @@ App.LiveMapView = Ember.View.extend({
                 requestAnimationFrame( fade );
             }
         });
-      }.observes('controller.content'),
+      }.observes('controller.content.@each'),
 });
 
 // Gadi Cohen, nov12, GPLed.   v0.1
