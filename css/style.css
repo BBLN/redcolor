@@ -1,6 +1,5 @@
-/* Put your CSS here */
 .ember-application {
-    margin: 20px;
+    padding: 20px;
 }
 
 body {
@@ -13,4 +12,30 @@ body {
     -moz-background-size: cover;    /* Mozilla*/
     -o-background-size: cover;      /* Opera*/
     background-size: cover;         /* Generic*/
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
+.map-container
+{
+    height: 100%;
+}
+
+.live-map
+{
+    width: 100%;
+    height: 100%;
+}
+
+.ember-view,
+.container-fluid,
+.row-fluid { height: inherit; }
+
+.content-row
+{
+    height: 95%;
 }
